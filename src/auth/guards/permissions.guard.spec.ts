@@ -3,27 +3,25 @@ import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PermissionsGuard } from './permissions.guard';
 import { PermissionsService } from '../../permissions/permissions.service';
-import {
-  PERMISSIONS_KEY,
-  PERMISSION_CHECK_TYPE_KEY,
-  PermissionCheckType,
-} from '../decorators/permissions.decorator';
+import { PermissionCheckType } from '../decorators/permissions.decorator';
 import {
   Permission,
   PermissionStatus,
+  PermissionType,
 } from '../../permissions/entities/permission.entity';
 
 describe('PermissionsGuard', () => {
   let guard: PermissionsGuard;
-  let reflector: Reflector;
-  let permissionsService: PermissionsService;
 
   const mockPermissionsService = {
     getUserPermissions: jest.fn(),
   };
 
   const mockReflector = {
-    getAllAndOverride: jest.fn(),
+    getAllAndOverride: jest.fn<
+      unknown,
+      Parameters<Reflector['getAllAndOverride']>
+    >(),
   };
 
   beforeEach(async () => {
@@ -42,22 +40,24 @@ describe('PermissionsGuard', () => {
     }).compile();
 
     guard = module.get<PermissionsGuard>(PermissionsGuard);
-    reflector = module.get<Reflector>(Reflector);
-    permissionsService = module.get<PermissionsService>(PermissionsService);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const createMockExecutionContext = (user: any): ExecutionContext => {
+  const createMockExecutionContext = (
+    user: { id: string } | null,
+  ): ExecutionContext => {
+    const httpContext = {
+      getRequest: () => ({ user }),
+    };
+
     return {
-      switchToHttp: () => ({
-        getRequest: () => ({ user }),
-      }),
+      switchToHttp: () => httpContext,
       getHandler: jest.fn(),
       getClass: jest.fn(),
-    } as any;
+    } as unknown as ExecutionContext;
   };
 
   const createMockPermission = (name: string): Permission => ({
@@ -65,7 +65,7 @@ describe('PermissionsGuard', () => {
     name,
     displayName: name,
     description: '',
-    type: 'action' as any,
+    type: PermissionType.ACTION,
     status: PermissionStatus.ACTIVE,
     createdAt: new Date(),
     updatedAt: new Date(),

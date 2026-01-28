@@ -3,6 +3,7 @@ import { AppModule } from '../app.module';
 import { UsersService } from '../users/users.service';
 import { RolesService } from '../roles/roles.service';
 import { PermissionsService } from '../permissions/permissions.service';
+import { PermissionType } from 'src/permissions/entities/permission.entity';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
@@ -22,31 +23,31 @@ async function bootstrap() {
         name: 'users.create',
         displayName: 'Create Users',
         description: 'Ability to create new users',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'users.read',
         displayName: 'Read Users',
         description: 'Ability to view users',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'users.update',
         displayName: 'Update Users',
         description: 'Ability to update users',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'users.delete',
         displayName: 'Delete Users',
         description: 'Ability to delete users',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'users.assign-roles',
         displayName: 'Assign Roles to Users',
         description: 'Ability to assign roles to users',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
 
       // Role permissions
@@ -54,31 +55,31 @@ async function bootstrap() {
         name: 'roles.create',
         displayName: 'Create Roles',
         description: 'Ability to create new roles',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'roles.read',
         displayName: 'Read Roles',
         description: 'Ability to view roles',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'roles.update',
         displayName: 'Update Roles',
         description: 'Ability to update roles',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'roles.delete',
         displayName: 'Delete Roles',
         description: 'Ability to delete roles',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'roles.assign-permissions',
         displayName: 'Assign Permissions to Roles',
         description: 'Ability to assign permissions to roles',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
 
       // Permission permissions
@@ -86,25 +87,25 @@ async function bootstrap() {
         name: 'permissions.create',
         displayName: 'Create Permissions',
         description: 'Ability to create new permissions',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'permissions.read',
         displayName: 'Read Permissions',
         description: 'Ability to view permissions',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'permissions.update',
         displayName: 'Update Permissions',
         description: 'Ability to update permissions',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
       permissionsService.create({
         name: 'permissions.delete',
         displayName: 'Delete Permissions',
         description: 'Ability to delete permissions',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
 
       // Admin permission
@@ -112,7 +113,7 @@ async function bootstrap() {
         name: 'admin.access',
         displayName: 'Admin Access',
         description: 'Full administrative access',
-        type: 'action' as any,
+        type: PermissionType.ACTION,
       }),
     ]);
 
@@ -206,4 +207,4 @@ async function bootstrap() {
   await app.close();
 }
 
-bootstrap();
+void bootstrap();

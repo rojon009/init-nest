@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import type { StringValue } from 'ms';
 import { User, UserStatus } from '../users/entities/user.entity';
 import { BcryptService } from './bcrypt.service';
 import { LoginDto } from './dto/login.dto';
@@ -75,7 +76,7 @@ export class AuthService {
       }
 
       return this.generateTokens(user);
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
@@ -102,28 +103,24 @@ export class AuthService {
 
     const jwtSecret =
       this.configService.get<string>('JWT_SECRET') || 'default-secret';
-    const jwtExpiry = this.configService.get<string>('JWT_EXPIRY') || '1h';
+    const jwtExpiry = (this.configService.get<string>('JWT_EXPIRY') ||
+      '1h') as StringValue;
     const refreshSecret =
       this.configService.get<string>('JWT_REFRESH_SECRET') ||
       'default-refresh-secret';
-    const refreshExpiry =
-      this.configService.get<string>('JWT_REFRESH_EXPIRY') || '7d';
+    const refreshExpiry = (this.configService.get<string>(
+      'JWT_REFRESH_EXPIRY',
+    ) || '7d') as StringValue;
 
-    const accessToken = this.jwtService.sign(
-      payload as any,
-      {
-        secret: jwtSecret,
-        expiresIn: jwtExpiry,
-      } as any,
-    );
+    const accessToken = this.jwtService.sign<JwtPayload>(payload, {
+      secret: jwtSecret,
+      expiresIn: jwtExpiry,
+    });
 
-    const refreshToken = this.jwtService.sign(
-      payload as any,
-      {
-        secret: refreshSecret,
-        expiresIn: refreshExpiry,
-      } as any,
-    );
+    const refreshToken = this.jwtService.sign<JwtPayload>(payload, {
+      secret: refreshSecret,
+      expiresIn: refreshExpiry,
+    });
 
     return {
       accessToken,

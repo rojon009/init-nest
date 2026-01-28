@@ -11,6 +11,7 @@ import {
   PermissionCheckType,
 } from '../decorators/permissions.decorator';
 import { PermissionsService } from '../../permissions/permissions.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -35,7 +36,7 @@ export class PermissionsGuard implements CanActivate {
         [context.getHandler(), context.getClass()],
       ) || PermissionCheckType.ALL;
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<{ user: User }>();
     const user = request.user;
 
     if (!user) {

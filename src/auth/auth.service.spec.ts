@@ -3,16 +3,12 @@ import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { AuthService } from './auth.service';
 import { BcryptService } from './bcrypt.service';
 import { User, UserStatus } from '../users/entities/user.entity';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let userRepository: Repository<User>;
-  let bcryptService: BcryptService;
-  let jwtService: JwtService;
 
   const mockUser: User = {
     id: '123e4567-e89b-12d3-a456-426614174000',
@@ -39,8 +35,8 @@ describe('AuthService', () => {
   };
 
   const mockConfigService = {
-    get: jest.fn((key: string) => {
-      const config = {
+    get: jest.fn((key: string): string | undefined => {
+      const config: Record<string, string> = {
         JWT_SECRET: 'test-secret',
         JWT_EXPIRY: '1h',
         JWT_REFRESH_SECRET: 'test-refresh-secret',
@@ -74,9 +70,6 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
-    bcryptService = module.get<BcryptService>(BcryptService);
-    jwtService = module.get<JwtService>(JwtService);
   });
 
   afterEach(() => {
