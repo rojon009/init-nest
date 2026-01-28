@@ -9,8 +9,15 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { ExampleModule } from './example/example.module';
 
 @Module({
-  imports: [DatabaseModule, AuthModule, UsersModule, RolesModule, PermissionsModule, ExampleModule],
+  imports: [
+    DatabaseModule,
+    AuthModule,
+    UsersModule,
+    RolesModule,
+    PermissionsModule,
+    ExampleModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

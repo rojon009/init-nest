@@ -7,9 +7,9 @@ import { UserRole } from '../users/entities/user-role.entity';
 import { RolePermission } from '../roles/entities/role-permission.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Permission, UserRole, RolePermission])],
-    controllers: [PermissionsController],
-    providers: [PermissionsService],
-    exports: [PermissionsService],
+  imports: [TypeOrmModule.forFeature([Permission, UserRole, RolePermission])],
+  controllers: [PermissionsController],
+  providers: [PermissionsService],
+  exports: [PermissionsService],
 })
-export class PermissionsModule { }
+export class PermissionsModule {}

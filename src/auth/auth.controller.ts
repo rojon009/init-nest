@@ -8,21 +8,21 @@ import { User } from '../users/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
-    @Post('login')
-    async login(@Body() loginDto: LoginDto) {
-        return this.authService.login(loginDto);
-    }
+  @Post('login')
+  async login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
+  }
 
-    @Post('refresh')
-    async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
-        return this.authService.refresh(refreshTokenDto.refreshToken);
-    }
+  @Post('refresh')
+  async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.refresh(refreshTokenDto.refreshToken);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('profile')
-    async getProfile(@CurrentUser() user: User) {
-        return this.authService.getProfile(user.id);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getProfile(@CurrentUser() user: User) {
+    return this.authService.getProfile(user.id);
+  }
 }

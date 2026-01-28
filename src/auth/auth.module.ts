@@ -10,14 +10,14 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { User } from '../users/entities/user.entity';
 
 @Module({
-    imports: [
-        ConfigModule,
-        PassportModule,
-        JwtModule.register({}), // Configuration is done dynamically in AuthService
-        TypeOrmModule.forFeature([User]),
-    ],
-    controllers: [AuthController],
-    providers: [AuthService, BcryptService, JwtStrategy],
-    exports: [AuthService, BcryptService],
+  imports: [
+    ConfigModule,
+    PassportModule,
+    JwtModule.register({}), // Configuration is done dynamically in AuthService
+    TypeOrmModule.forFeature([User]),
+  ],
+  controllers: [AuthController],
+  providers: [AuthService, BcryptService, JwtStrategy],
+  exports: [AuthService, BcryptService],
 })
-export class AuthModule { }
+export class AuthModule {}

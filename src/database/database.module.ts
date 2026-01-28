@@ -26,4 +26,4 @@ import { RolePermission } from '../roles/entities/role-permission.entity';
     }),
   ],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

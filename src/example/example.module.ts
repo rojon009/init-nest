@@ -3,7 +3,7 @@ import { ExampleController } from './example.controller';
 import { PermissionsModule } from '../permissions/permissions.module';
 
 @Module({
-    imports: [PermissionsModule],
-    controllers: [ExampleController],
+  imports: [PermissionsModule],
+  controllers: [ExampleController],
 })
-export class ExampleModule { }
+export class ExampleModule {}

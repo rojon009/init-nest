@@ -9,27 +9,27 @@ import { JwtPayload } from '../auth.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(
-        private readonly configService: ConfigService,
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
-    ) {
-        super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: configService.get<string>('JWT_SECRET') || 'default-secret',
-        });
+  constructor(
+    private readonly configService: ConfigService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: configService.get<string>('JWT_SECRET') || 'default-secret',
+    });
+  }
+
+  async validate(payload: JwtPayload): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id: payload.sub, status: UserStatus.ACTIVE },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found or inactive');
     }
 
-    async validate(payload: JwtPayload): Promise<User> {
-        const user = await this.userRepository.findOne({
-            where: { id: payload.sub, status: UserStatus.ACTIVE },
-        });
-
-        if (!user) {
-            throw new UnauthorizedException('User not found or inactive');
-        }
-
-        return user;
-    }
+    return user;
+  }
 }
