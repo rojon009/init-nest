@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
+import { Role } from '../roles/entities/role.entity';
+import { Permission } from '../permissions/entities/permission.entity';
+import { UserRole } from '../users/entities/user-role.entity';
+import { RolePermission } from '../roles/entities/role-permission.entity';
 
 @Module({
   imports: [
@@ -15,7 +19,7 @@ import { User } from 'src/users/entities/user.entity';
         username: configService.getOrThrow<string>('DB_USERNAME'),
         password: configService.getOrThrow<string>('DB_PASSWORD'),
         database: configService.getOrThrow<string>('DB_NAME'),
-        entities: [User],
+        entities: [User, Role, Permission, UserRole, RolePermission],
         synchronize: true, // Disable in production
       }),
       inject: [ConfigService],

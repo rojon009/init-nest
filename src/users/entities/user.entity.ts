@@ -2,50 +2,42 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
-    Index,
-    Check,
     CreateDateColumn,
     UpdateDateColumn,
-    DeleteDateColumn,
-    VersionColumn,
+    OneToMany,
 } from 'typeorm';
+import { UserRole } from './user-role.entity';
 
 export enum UserStatus {
-    ACTIVE = 'ACTIVE',
-    SUSPENDED = 'SUSPENDED',
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+    SUSPENDED = 'suspended',
 }
 
-@Entity({ name: 'users' })
-@Index('ux_users_email', ['email'], { unique: true })
-@Index('idx_users_status', ['status'])
-@Check(`"name" <> ''`)
+@Entity('users')
 export class User {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'varchar', length: 120 })
-    name: string;
-
-    // CITEXT = case-insensitive compare + unique works as expected
-    @Column({ type: 'citext', unique: true })
+    @Column({ unique: true })
     email: string;
 
-    // @Column({ type: 'varchar', length: 255, select: false })
-    // passwordHash: string;
+    @Column()
+    password: string;
 
-    @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
+    @Column({
+        type: 'enum',
+        enum: UserStatus,
+        default: UserStatus.ACTIVE,
+    })
     status: UserStatus;
 
-    @CreateDateColumn({ type: 'timestamptz' })
+    @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn({ type: 'timestamptz' })
+    @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 
-    @DeleteDateColumn({ type: 'timestamptz' })
-    deletedAt?: Date;
-
-    @VersionColumn()
-    version: number;
+    @OneToMany(() => UserRole, (userRole) => userRole.user)
+    userRoles: UserRole[];
 }
-
