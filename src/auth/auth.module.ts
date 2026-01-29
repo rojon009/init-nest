@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { BcryptService } from './bcrypt.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { User } from '../users/entities/user.entity';
+import { PermissionsModule } from '../permissions/permissions.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { User } from '../users/entities/user.entity';
     PassportModule,
     JwtModule.register({}), // Configuration is done dynamically in AuthService
     TypeOrmModule.forFeature([User]),
+    PermissionsModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, BcryptService, JwtStrategy],

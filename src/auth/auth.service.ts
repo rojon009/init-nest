@@ -9,6 +9,7 @@ import { BcryptService } from './bcrypt.service';
 import { LoginDto } from './dto/login.dto';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from '../users/dto/user-response.dto';
+import { PermissionsService } from '../permissions/permissions.service';
 
 export interface JwtPayload {
   sub: string;
@@ -20,6 +21,11 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
+export interface MeResponse {
+  user: UserResponseDto;
+  permissions: string[];
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -28,6 +34,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly bcryptService: BcryptService,
     private readonly configService: ConfigService,
+    private readonly permissionsService: PermissionsService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -93,6 +100,17 @@ export class AuthService {
     return plainToInstance(UserResponseDto, user, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async getMe(userId: string): Promise<MeResponse> {
+    const userDto = await this.getProfile(userId);
+    const permissions =
+      await this.permissionsService.getUserPermissions(userId);
+
+    return {
+      user: userDto,
+      permissions: permissions.map((p) => p.name),
+    };
   }
 
   private generateTokens(user: User): AuthTokens {
