@@ -18,14 +18,18 @@ export class InitSslPaymentDto {
   @IsString()
   currency: string;
 
+  /** Override module forRoot default when provided */
+  @IsOptional()
   @IsString()
-  success_url: string;
+  success_url?: string;
 
+  @IsOptional()
   @IsString()
-  fail_url: string;
+  fail_url?: string;
 
+  @IsOptional()
   @IsString()
-  cancel_url: string;
+  cancel_url?: string;
 
   @IsOptional()
   @IsString()

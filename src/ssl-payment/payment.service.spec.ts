@@ -1,34 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
 import { SslPaymentService } from './ssl-payment.service';
+import { SSL_PAYMENT_OPTIONS } from './ssl-payment-options.interface';
+
+const mockOptions = {
+  storeId: 'test_store',
+  storePasswd: 'test_pass',
+  isLive: false,
+  successUrl: 'http://localhost:3000/ssl-payment/success',
+  failUrl: 'http://localhost:3000/ssl-payment/fail',
+  cancelUrl: 'http://localhost:3000/ssl-payment/cancel',
+  ipnUrl: 'http://localhost:3000/ssl-payment/ipn',
+};
 
 describe('SslPaymentService', () => {
   let service: SslPaymentService;
-
-  const mockConfigService = {
-    get: jest.fn((key: string): string | undefined => {
-      const map: Record<string, string> = {
-        SSLCOMMERZ_IS_LIVE: 'false',
-        SSLCOMMERZ_STORE_ID: 'test_store',
-        SSLCOMMERZ_STORE_PASSWD: 'test_pass',
-      };
-      return map[key];
-    }),
-    getOrThrow: jest.fn((key: string): string => {
-      const map: Record<string, string> = {
-        SSLCOMMERZ_STORE_ID: 'test_store',
-        SSLCOMMERZ_STORE_PASSWD: 'test_pass',
-      };
-      if (map[key]) return map[key];
-      throw new Error(`Missing config: ${key}`);
-    }),
-  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SslPaymentService,
-        { provide: ConfigService, useValue: mockConfigService },
+        { provide: SSL_PAYMENT_OPTIONS, useValue: mockOptions },
       ],
     }).compile();
 

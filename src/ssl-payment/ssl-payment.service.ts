@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Inject } from '@nestjs/common';
 import { InitSslPaymentDto } from './dto/init-ssl-payment.dto';
 import { InitiateSslRefundDto } from './dto/ssl-refund.dto';
 import { SslPaymentInitResponse } from './dto/ssl-payment-init-response.dto';
 import { SslPaymentValidationResponse } from './dto/ssl-payment-validation-response.dto';
+import { SSL_PAYMENT_OPTIONS } from './ssl-payment-options.interface';
+import type { SslPaymentModuleOptions } from './ssl-payment-options.interface';
 
 @Injectable()
 export class SslPaymentService {
@@ -15,15 +16,14 @@ export class SslPaymentService {
   private readonly refundURL: string;
   private readonly refundQueryURL: string;
   private readonly transactionQueryURL: string;
+  private readonly options: SslPaymentModuleOptions;
 
-  constructor(private readonly configService: ConfigService) {
-    const isLive =
-      this.configService.get<string>('SSLCOMMERZ_IS_LIVE') === 'true';
+  constructor(@Inject(SSL_PAYMENT_OPTIONS) options: SslPaymentModuleOptions) {
+    this.options = options;
+    const isLive = options.isLive === true;
     this.baseURL = `https://${isLive ? 'securepay' : 'sandbox'}.sslcommerz.com`;
-    this.storeId = this.configService.getOrThrow<string>('SSLCOMMERZ_STORE_ID');
-    this.storePasswd = this.configService.getOrThrow<string>(
-      'SSLCOMMERZ_STORE_PASSWD',
-    );
+    this.storeId = options.storeId;
+    this.storePasswd = options.storePasswd;
     this.initURL = `${this.baseURL}/gwprocess/v4/api.php`;
     this.validationURL = `${this.baseURL}/validator/api/validationserverAPI.php`;
     this.refundURL = `${this.baseURL}/validator/api/merchantTransIDvalidationAPI.php`;
@@ -39,10 +39,10 @@ export class SslPaymentService {
       tran_id: dto.tran_id,
       total_amount: dto.total_amount,
       currency: dto.currency,
-      success_url: dto.success_url,
-      fail_url: dto.fail_url,
-      cancel_url: dto.cancel_url,
-      ipn_url: dto.ipn_url,
+      success_url: this.options.successUrl,
+      fail_url: this.options.failUrl,
+      cancel_url: this.options.cancelUrl,
+      ipn_url: this.options.ipnUrl,
       multi_card_name: dto.multi_card_name,
       allowed_bin: dto.allowed_bin,
       emi_option: dto.emi_option,
