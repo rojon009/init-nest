@@ -1,14 +1,15 @@
-import { Injectable, OnApplicationShutdown } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import { shutdown } from './otel';
 
 @Injectable()
 export class OtelShutdownService implements OnApplicationShutdown {
+  private readonly logger = new Logger(OtelShutdownService.name);
+
   async onApplicationShutdown(): Promise<void> {
     try {
       await shutdown();
     } catch (err) {
-      console.error('OTel SDK shutdown failed:', err);
-      process.exit(1);
+      this.logger.error('OTel SDK shutdown failed', err);
     }
   }
 }

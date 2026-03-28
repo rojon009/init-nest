@@ -65,7 +65,20 @@ export const otelSdk = new NodeSDK({
   ],
 });
 
-otelSdk.start();
+let started = false;
+
+/**
+ * Start the OTel SDK.
+ *
+ * Note: this is intentionally *not* auto-started on import so tests and tooling
+ * can load the app without leaving open handles.
+ */
+export function startOtel(): void {
+  if (started) return;
+  if (process.env.NODE_ENV === 'test') return;
+  otelSdk.start();
+  started = true;
+}
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 
@@ -74,6 +87,7 @@ const SHUTDOWN_TIMEOUT_MS = 10_000;
  * Resolves after shutdown or after SHUTDOWN_TIMEOUT_MS; rejects on SDK shutdown error.
  */
 export async function shutdown(): Promise<void> {
+  if (!started) return;
   await Promise.race([
     otelSdk.shutdown(),
     new Promise<void>((_, reject) =>

@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from 'src/users/entities/user.entity';
+import { ConfigService } from '@nestjs/config';
+import { User } from '../users/entities/user.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), // To load environment variables if needed
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule], // Optional if you use env variables
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.getOrThrow<string>('DB_HOST'),
@@ -16,7 +14,10 @@ import { User } from 'src/users/entities/user.entity';
         password: configService.getOrThrow<string>('DB_PASSWORD'),
         database: configService.getOrThrow<string>('DB_NAME'),
         entities: [User],
-        synchronize: true, // Disable in production
+        synchronize: false,
+        migrationsRun: true,
+        migrations: ['dist/migrations/*.js'],
+        // In a real prod setup, keep `logging` env-controlled.
       }),
       inject: [ConfigService],
     }),

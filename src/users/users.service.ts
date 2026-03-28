@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -12,22 +17,42 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return this.userRepository.save(createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    const existing = await this.userRepository.findOne({
+      where: { email: createUserDto.email },
+      withDeleted: false,
+    });
+    if (existing) {
+      throw new ConflictException('Email already registered');
+    }
+
+    const passwordHash = await bcrypt.hash(createUserDto.password, 12);
+    const user = this.userRepository.create({
+      name: createUserDto.name,
+      email: createUserDto.email,
+      status: createUserDto.status,
+      passwordHash,
+    });
+
+    return this.userRepository.save(user);
   }
 
   findAll() {
     return this.userRepository.find();
   }
 
-  findOne(id: string) {
-    return this.userRepository.findOneBy({ id });
+  async findOne(id: string) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     if (updateUserDto.name) {
@@ -35,6 +60,9 @@ export class UsersService {
     }
     if (updateUserDto.email) {
       user.email = updateUserDto.email;
+    }
+    if (updateUserDto.password) {
+      user.passwordHash = await bcrypt.hash(updateUserDto.password, 12);
     }
     if (updateUserDto.status) {
       user.status = updateUserDto.status;

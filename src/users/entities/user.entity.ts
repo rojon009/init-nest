@@ -9,6 +9,7 @@ import {
   DeleteDateColumn,
   VersionColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
@@ -30,8 +31,9 @@ export class User {
   @Column({ type: 'citext', unique: true })
   email: string;
 
-  // @Column({ type: 'varchar', length: 255, select: false })
-  // passwordHash: string;
+  @Exclude()
+  @Column({ type: 'varchar', length: 255, select: false })
+  passwordHash: string;
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
   status: UserStatus;
