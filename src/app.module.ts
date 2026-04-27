@@ -5,7 +5,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { DatabaseModule } from './database/database.module';
+// Swap import to MongodbDatabaseModule to use MongoDB instead
+import { PostgresDatabaseModule } from './database/postgres.database.module';
+// import { MongodbDatabaseModule } from './database/mongodb.database.module';
 import { OtelShutdownService } from './otel-shutdown.service';
 import * as Joi from 'joi';
 
@@ -22,12 +24,6 @@ import * as Joi from 'joi';
           .valid('error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly')
           .default('info'),
 
-        DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.number().port().default(5432),
-        DB_USERNAME: Joi.string().required(),
-        DB_PASSWORD: Joi.string().required(),
-        DB_NAME: Joi.string().required(),
-
         CORS_ORIGINS: Joi.string().default(''),
       }),
       validationOptions: {
@@ -36,7 +32,7 @@ import * as Joi from 'joi';
       },
     }),
     ThrottlerModule.forRoot([{ name: 'short', ttl: 60_000, limit: 20 }]),
-    DatabaseModule,
+    PostgresDatabaseModule, // swap to MongodbDatabaseModule for MongoDB
     UsersModule,
   ],
   controllers: [AppController],
